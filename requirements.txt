@@ -1,0 +1,7 @@
+
+Flask
+Pillow
+ultralytics
+opencv-python
+openai-whisper
+reportlab

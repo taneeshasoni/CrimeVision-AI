@@ -1,0 +1,10 @@
+
+.venv/
+__pycache__/
+*.pyc
+uploads/
+analysis_results/
+audio_results/
+video_results/
+*.pt
+.env

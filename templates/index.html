@@ -1,0 +1,522 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrimeVision AI | Forensic Analysis</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #e5e7eb;
+        }
+
+        header {
+            padding: 24px 7%;
+            background: #111b2e;
+            border-bottom: 1px solid #263449;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #67e8f9;
+            font-size: 30px;
+        }
+
+        header p {
+            color: #9ca3af;
+            margin-bottom: 0;
+        }
+
+        main {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            margin-bottom: 25px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit, minmax(250px, 1fr)
+            );
+            gap: 20px;
+        }
+
+        .card {
+            background: #111b2e;
+            padding: 22px;
+            border: 1px solid #263449;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #f3f4f6;
+        }
+
+        .card p {
+            line-height: 1.5;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            margin-top: 14px;
+            padding: 10px;
+            background: #0b1120;
+            color: #e5e7eb;
+            border: 1px solid #374151;
+            border-radius: 7px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 14px;
+            padding: 12px;
+            background: #0891b2;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0e7490;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #result {
+            margin-top: 24px;
+            background: #111b2e;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #263449;
+            min-height: 100px;
+            overflow-wrap: anywhere;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            color: #a7f3d0;
+            font-size: 13px;
+        }
+
+        .hint {
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .timeline-item {
+            padding: 14px;
+            margin: 12px 0;
+            border-left: 3px solid #22d3ee;
+            background: #0b1120;
+            border-radius: 6px;
+        }
+
+        .timeline-time {
+            color: #67e8f9;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 25px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            main {
+                margin-top: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>CrimeVision AI</h1>
+    <p>Intelligent Multimodal Forensic Analysis Platform</p>
+</header>
+
+<main>
+
+    <h2>Analysis Dashboard</h2>
+    
+<div class="grid" id="stats" style="margin: 20px 0;">
+    <section class="card">
+        <h2>Total Analyses</h2>
+        <p id="totalCount">Loading...</p>
+    </section>
+
+    <section class="card">
+        <h2>Image Analyses</h2>
+        <p id="imageCount">Loading...</p>
+    </section>
+
+    <section class="card">
+        <h2>Audio Transcriptions</h2>
+        <p id="audioCount">Loading...</p>
+    </section>
+
+    <section class="card">
+        <h2>Video Analyses</h2>
+        <p id="videoCount">Loading...</p>
+    </section>
+</div>
+
+    <p class="subtitle">
+        Upload an image, audio recording, or video to begin AI analysis.
+    </p>
+
+    <!-- Upload cards -->
+    <div class="grid">
+
+        <section class="card">
+            <h2>Image Analysis</h2>
+            <p>Detect objects in an image using RT-DETR.</p>
+
+            <input
+                id="imageFile"
+                type="file"
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            >
+
+            <button onclick="analyze('image', this)">
+                Analyze Image
+            </button>
+        </section>
+
+        <section class="card">
+            <h2>Audio Transcription</h2>
+            <p>Convert speech into text using Whisper.</p>
+
+            <input
+                id="audioFile"
+                type="file"
+                accept=".wav,.mp3,.m4a,.ogg,.flac,audio/*"
+            >
+
+            <button onclick="analyze('audio', this)">
+                Transcribe Audio
+            </button>
+        </section>
+
+        <section class="card">
+            <h2>Video Analysis</h2>
+            <p>Detect objects across sampled video frames.</p>
+
+            <input
+                id="videoFile"
+                type="file"
+                accept=".mp4,.avi,.mov,.mkv,video/*"
+            >
+
+            <button onclick="analyze('video', this)">
+                Analyze Video
+            </button>
+
+            <p class="hint">
+                For initial testing, use a short video under 100 MB.
+            </p>
+        </section>
+
+    </div>
+
+    <!-- Analysis results -->
+    <section id="result" aria-live="polite">
+        <h2>Analysis Results</h2>
+        <p>Results will appear here after an analysis completes.</p>
+    </section>
+
+    <!-- Video timeline -->
+    <section class="card">
+        <h2>Video Event Timeline</h2>
+        <p class="hint">
+            Objects detected at different video timestamps.
+        </p>
+
+        <div id="timeline">
+            <p>Analyze a video to display its timeline here.</p>
+        </div>
+    </section>
+
+    <!-- Analysis history -->
+    <section class="card">
+        <h2>Analysis History</h2>
+        <p>
+            Retrieve a previously saved image analysis using its Analysis ID.
+        </p>
+
+        <input
+            id="analysisId"
+            type="text"
+            placeholder="Enter your image Analysis ID"
+        >
+
+        <button onclick="getPreviousAnalysis(this)">
+            Retrieve Image Report
+        </button>
+
+        <p class="hint">
+            The Analysis ID appears in the result after image analysis.
+        </p>
+    </section>
+
+    <!-- PDF report -->
+    <section class="card">
+        <h2>Download PDF Report</h2>
+        <p>Download a report for a previously analyzed image.</p>
+
+        <input
+            id="reportId"
+            type="text"
+            placeholder="Enter your image Analysis ID"
+        >
+
+        <button onclick="downloadReport()">
+            Download PDF Report
+        </button>
+    </section>
+
+</main>
+
+<footer>
+    CrimeVision AI | AI-assisted analysis prototype
+    <br>
+    AI detections require independent verification and are not proof of a crime.
+</footer>
+
+<script>
+    const config = {
+        image: {
+            input: "imageFile",
+            endpoint: "/analyze-image",
+            field: "image"
+        },
+        audio: {
+            input: "audioFile",
+            endpoint: "/transcribe-audio",
+            field: "audio"
+        },
+        video: {
+            input: "videoFile",
+            endpoint: "/analyze-video",
+            field: "video"
+        }
+    };
+
+    function displayResult(title, data) {
+        const result = document.getElementById("result");
+        result.replaceChildren();
+
+        const heading = document.createElement("h2");
+        heading.textContent = title;
+        result.appendChild(heading);
+
+        const output = document.createElement("pre");
+        output.textContent = JSON.stringify(data, null, 2);
+        result.appendChild(output);
+    }
+
+    async function analyze(type, button) {
+        const item = config[type];
+        const fileInput = document.getElementById(item.input);
+        const file = fileInput.files[0];
+        const result = document.getElementById("result");
+
+        if (!file) {
+            displayResult("File Required", {
+                message: "Please select a file before starting analysis."
+            });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append(item.field, file);
+
+        button.disabled = true;
+        button.textContent = "Analyzing...";
+
+        displayResult("Analysis in Progress", {
+            filename: file.name,
+            message: "Please wait while the AI processes your file."
+        });
+
+        try {
+            const response = await fetch(item.endpoint, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                displayResult("Analysis Failed", data);
+                return;
+            }
+
+            displayResult("Analysis Complete", data);
+
+            if (type === "video") {
+                showVideoTimeline(data);
+            }
+
+        } catch (error) {
+            displayResult("Connection Error", {
+                message: "Could not contact Flask. Check that the server is running."
+            });
+        } finally {
+            button.disabled = false;
+
+            button.textContent = {
+                image: "Analyze Image",
+                audio: "Transcribe Audio",
+                video: "Analyze Video"
+            }[type];
+        }
+    }
+
+    function showVideoTimeline(data) {
+        const timeline = document.getElementById("timeline");
+        timeline.replaceChildren();
+
+        if (!Array.isArray(data.timeline) || data.timeline.length === 0) {
+            timeline.textContent = "No analyzed frames were returned.";
+            return;
+        }
+
+        data.timeline.forEach(frame => {
+            const card = document.createElement("div");
+            card.className = "timeline-item";
+
+            const heading = document.createElement("div");
+            heading.className = "timeline-time";
+            heading.textContent =
+                "Timestamp: " + frame.timestamp_seconds + " seconds";
+
+            const details = document.createElement("p");
+            const detections = frame.detections || [];
+
+            if (detections.length > 0) {
+                details.textContent = detections.map(item => {
+                    const confidence =
+                        (Number(item.confidence) * 100).toFixed(1);
+
+                    return item.object + " (" + confidence + "% confidence)";
+                }).join(", ");
+            } else {
+                details.textContent = "No objects detected in this frame.";
+            }
+
+            card.appendChild(heading);
+            card.appendChild(details);
+            timeline.appendChild(card);
+        });
+    }
+
+    async function getPreviousAnalysis(button) {
+        const id = document.getElementById("analysisId").value.trim();
+
+        if (!/^[a-f0-9]{32}$/.test(id)) {
+            displayResult("Invalid Analysis ID", {
+                message: "Enter the 32-character analysis ID from an image report."
+            });
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Retrieving...";
+
+        try {
+            const response = await fetch("/analysis/" + id);
+            const data = await response.json();
+
+            displayResult(
+                response.ok ? "Previous Image Report" : "Report Not Found",
+                data
+            );
+        } catch (error) {
+            displayResult("Retrieval Failed", {
+                message: "Could not retrieve the report. Check Flask."
+            });
+        } finally {
+            button.disabled = false;
+            button.textContent = "Retrieve Image Report";
+        }
+    }
+
+    function downloadReport() {
+        const id = document.getElementById("reportId").value.trim();
+
+        if (!/^[a-f0-9]{32}$/.test(id)) {
+            displayResult("Invalid Analysis ID", {
+                message: "Enter a valid 32-character image analysis ID."
+            });
+            return;
+        }
+
+        window.location.href = "/report/" + id;
+    }
+
+async function loadDashboardStats() {
+    try {
+        const response = await fetch("/dashboard-stats");
+
+        if (!response.ok) {
+            throw new Error("Could not load statistics");
+        }
+
+        const stats = await response.json();
+
+        document.getElementById("totalCount").textContent =
+            stats.total_analyses;
+
+        document.getElementById("imageCount").textContent =
+            stats.image_analyses;
+
+        document.getElementById("audioCount").textContent =
+            stats.audio_transcriptions;
+
+        document.getElementById("videoCount").textContent =
+            stats.video_analyses;
+    } catch (error) {
+        document.getElementById("totalCount").textContent = "Unavailable";
+        document.getElementById("imageCount").textContent = "Unavailable";
+        document.getElementById("audioCount").textContent = "Unavailable";
+        document.getElementById("videoCount").textContent = "Unavailable";
+    }
+}
+
+loadDashboardStats();
+</script>
+
+</body>
+</html>
